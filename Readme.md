@@ -15,11 +15,11 @@ article_sys_backend/
 └── run.py
 ```
 # 2.文件说明
-run.py - 项目启动文件(启动入口)
-utils/* - 配置常量等工具文件  
-service/* - 功能层(实际功能实现文件)  
-api/Routes.py - api层(提供后端接口)  
-data/* - 文件存放  
+run.py -- 项目启动文件(启动入口)  
+utils/* -- 配置常量等工具文件  
+service/* -- 功能层(实际功能实现文件)  
+api/Routes.py -- api层(提供后端接口)  
+data/* -- 文件存放  
 
 # 3.项目规范
 --文件名使用大驼峰 (ArxivTranslator 如部分名词无法使用大驼峰，则可以全大写，例如LLM,CNN)  

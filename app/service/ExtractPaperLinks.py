@@ -43,9 +43,3 @@ def extract_paper_links(filename: str) -> Set[str]:
         print(f"处理文件时发生错误：{e}")
 
     return links
-
-if __name__ == "__main__":
-    paper_links = extract_paper_links('2025-10-06-papers/2025-10-06-LLMs安全.md')
-    print(f"提取到 {len(paper_links)} 个唯一的论文链接:")
-    for link in paper_links:
-        print(link)
