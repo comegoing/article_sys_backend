@@ -73,13 +73,13 @@ def arxivTranslate(start_date, end_date, choice, max_results):
 
         for i, paper in enumerate(translated_papers, 1):
             temp_data = {
-                'title_zh': paper['title_zh'],
-                'title_en': paper['title_en'],
-                'authors': paper['authors'],
+                'titleZH': paper['title_zh'],
+                'titleEN': paper['title_en'],
+                'author': paper['authors'],
                 'comment': paper['comment'],
-                'pdf_url': paper['pdf_url'],
-                'summary_zh': paper['summary_zh'],
-                'summary_en': paper['summary_en']
+                'url': paper['pdf_url'],
+                'abstractZH': paper['summary_zh'],
+                'abstractEN': paper['summary_en']
             }
             rsp_data.append(temp_data)
     else:
