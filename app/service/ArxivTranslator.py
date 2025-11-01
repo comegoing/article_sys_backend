@@ -24,8 +24,6 @@ TRANSLATION_MODEL = ModelOptions.HUNYUAN.value
     retry=retry_if_exception_type(
         (requests.exceptions.Timeout, requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout))
 )
-
-
 # 文献查询service层(功能层)
 def arxivTranslate(start_date, end_date, choice, max_results):
     # 默认值
@@ -64,15 +62,30 @@ def arxivTranslate(start_date, end_date, choice, max_results):
                                                                             start_date=start_date, end_date=end_date,
                                                                             china_tz=time_direct_zone,
                                                                             filename=filename, max_results=max_results)
-    # print("搜索返回的结果{}".format(translated_papers))
-    # print("搜索返回的结果2{}".format(all_paper_titles))
-    # 保存结果
+
+    rsp_data = []
+    # 返回结果
     if translated_papers:
-        save_translated_results(translated_papers, all_paper_titles=all_paper_titles, filename=filename,
-                                query_name=query_name, start_date=start_date, end_flag=True)
+        # 保存结果
+        # save_translated_results(translated_papers, all_paper_titles=all_paper_titles, filename=filename,
+        #                         query_name=query_name, start_date=start_date, end_flag=True)
         print(f"\n总共处理了 {len(translated_papers)} 篇论文")
+
+        for i, paper in enumerate(translated_papers, 1):
+            temp_data = {
+                'title_zh': paper['title_zh'],
+                'title_en': paper['title_en'],
+                'authors': paper['authors'],
+                'comment': paper['comment'],
+                'pdf_url': paper['pdf_url'],
+                'summary_zh': paper['summary_zh'],
+                'summary_en': paper['summary_en']
+            }
+            rsp_data.append(temp_data)
     else:
         print("\n没有找到符合条件的论文")
+
+    return rsp_data
 
 
 # 1.检索功能最顶层(检索并翻译)
@@ -101,20 +114,14 @@ def search_and_translate_arxiv_papers(query, query_name, start_date, end_date, c
         print(f"预计获取最多{max_results}篇论文...")
 
         for i, result in enumerate(search.results()):
-            # print("每一次循环的结果{}".format(result))
             try:
                 # 转换时间
                 utc_time = result.updated
-                # print("utc_time{}".format(utc_time))
                 china_time = utc_time.astimezone(china_tz)
-                # print("china_time{}".format(china_time))
-                # print("start_date{}".format(start_date))
-                # print("end_date{}".format(end_date))
                 china_time_text = china_time.strftime("%Y年%m月%d日")
 
                 # 检查时间范围
                 if start_date <= china_time < end_date:
-                    # print("进入了查询中")
                     if query_name == "对抗机器学习" and result.pdf_url in llm_safe_paper_list:
                         print(f"论文《 {result.title[:50]}...》已在LLM安全列表中，无需放入 对抗机器学习 目录中，跳过")
                         continue
@@ -166,6 +173,7 @@ def search_and_translate_arxiv_papers(query, query_name, start_date, end_date, c
 
     return translated_papers, all_paper_titles
 
+
 # 2.将英文摘要的多行文本合并成一个自然段（无手动换行）
 def clean_abstract(abstract):
     """
@@ -195,6 +203,7 @@ def clean_abstract(abstract):
     # 不进行手动换行，完全交给Markdown处理
     return cleaned
 
+
 # 3.翻译摘要与标题
 def translate_text(text, source_lang="en", target_lang="zh", max_retries=3):
     if not text or not API_KEY:
@@ -202,7 +211,6 @@ def translate_text(text, source_lang="en", target_lang="zh", max_retries=3):
 
     # 硅基流动API地址 - 尝试使用备用地址
     url = "https://api.siliconflow.cn/v1/chat/completions"
-    # url = "https://api.siliconcloud.cn/v1/chat/completions"  # 备用API地址（如果有的话）
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
@@ -304,7 +312,6 @@ def save_translated_results(papers, all_paper_titles,
             for i, paper in enumerate(papers, 1):
                 f.write(f"## {i}. {paper['title_zh']}\n")
                 f.write(f"**英文标题**: {paper['title_en']}\n\n")
-                # f.write(f"**发表日期**: {paper['date']}\n")
                 f.write(f"**作者**: {', '.join(paper['authors'])}\n\n")
                 f.write(f"{paper['comment']}\n\n")
                 f.write(f"**链接**: [{paper['pdf_url']}]({paper['pdf_url']})\n\n")
@@ -321,6 +328,7 @@ def save_translated_results(papers, all_paper_titles,
 
     except Exception as e:
         print(f"保存翻译结果时出错: {str(e)}")
+
 
 # 5.生成论文总结
 def generate_papers_summary(all_paper_titles):
