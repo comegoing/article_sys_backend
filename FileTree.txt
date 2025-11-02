@@ -7,8 +7,7 @@ article_sys_backend/
 │   │   └── Routes.py
 │   ├── service
 │   │   ├── ArxivTranslator.py
-│   │   ├── ExtractPaperLinks.py
-│   │   └── LLM.py
+│   │   └── TranslateUtils.py
 │   ├── utils
 │   │   ├── Config.py
 │   │   └── Constant.py
