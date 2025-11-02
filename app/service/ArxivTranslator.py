@@ -68,7 +68,6 @@ def arxivTranslate(start_date, end_date, choice, max_results):
                 'titleZH': paper['titleZH'],
                 'titleEN': paper['titleEN'],
                 'author': paper['author'],
-                'comment': paper['comment'],
                 'url': paper['url'],
                 'abstractZH': paper['abstractZH'],
                 'abstractEN': paper['abstractEN'],
@@ -125,8 +124,7 @@ def search_and_translate_arxiv_papers(query, start_date, end_date, china_tz, max
                     "titleZH": translated_title,
                     "author": ', '.join(authors),
                     "abstractEN": abstract_en,
-                    "abstractZH": translated_summary,
-                    "comment": result.comment if result.comment else ""
+                    "abstractZH": translated_summary
                 }
 
                 translated_papers.append(paper_info)
